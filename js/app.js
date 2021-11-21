@@ -8,7 +8,8 @@ const searchWeather = async () => {
 	} else {
 		document.getElementById('error_notice').textContent = '';
 		document.getElementById('weather_info').textContent = '';
-		const url = `https://api.openweathermap.org/data/2.5/weather?q=${searchText}&appid=0c4ef1b4f6592cb29a883e80055fa44a&units=metric`;
+		const myId = config.MY_API_ID;
+		const url = `https://api.openweathermap.org/data/2.5/weather?q=${searchText}&appid=${myId}&units=metric`;
 		try {
 			const res = await fetch(url);
 			const data = await res.json();
@@ -18,6 +19,25 @@ const searchWeather = async () => {
 			console.log(err);
 		}
 	}
+};
+
+// convert unix time to local format
+const convertUnixTimeToLocal = unixTime => {
+	const milliSeconds = unixTime * 1000;
+	const humanDateFormat = new Date(milliSeconds);
+	const convertedTimeObject = {
+		fullDate: humanDateFormat.toLocaleString('en-US', {
+			day: 'numeric',
+			month: 'short',
+			year: 'numeric',
+		}),
+		time12h: humanDateFormat.toLocaleString('en-US', {
+			hour: 'numeric',
+			minute: 'numeric',
+			hour12: true,
+		}),
+	};
+	return convertedTimeObject;
 };
 
 // trigger search on pressing the Enter key
@@ -38,7 +58,7 @@ const displayErrorNotice = (errorMessage = 'Something went wrong. Try again late
 
 // show weather details
 const showWeatherDetails = location => {
-	console.log(location);
+	// console.log(location);
 	// const currentDate = new Date().toLocaleString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
 	const localDate = convertUnixTimeToLocal(location.dt);
 	const sunriseTime = convertUnixTimeToLocal(location.sys.sunrise);
@@ -47,9 +67,12 @@ const showWeatherDetails = location => {
 		<div class="main-info">
 			<h3 class="location d-flex justify-content-center text-start fw-normal mb-0">
 				<span class="icon me-2"><img src="./images/location.svg" alt="Location"></span>
-				<span>${location.name}, ${location.sys.country} <span class="date d-block mt-1">${localDate.fullDate}</span></span>
+				<span> 
+					<span class="d-block">${location.name}, ${location.sys.country}</span>
+					<span class="date d-inline-block">${localDate.fullDate}</span>
+				</span>
 			</h3>
-			<div class="status-image">
+			<div class="status-image my-2">
 				<img src="http://openweathermap.org/img/wn/${location.weather[0].icon}@2x.png" alt="Weather icon">
 			</div>
 			<h2 class="temperature d-flex align-items-center justify-content-center">
@@ -59,7 +82,7 @@ const showWeatherDetails = location => {
 		</div>
 		<div class="extra-info pt-3 overflow-hidden">
 			<p class="feels-like px-3  border-end">Feels like <b>38.74</b>&deg;C</p>
-			<p class="humidity px-3 ">Humidity <b>${location.main.feels_like}&percnt;</b></p>
+			<p class="humidity px-3 ">Humidity <b>${location.main.feels_like}&#37;</b></p>
 			<div class="px-3 d-flex justify-content-center align-items-center mt-4">
 				<div class="sunrise pe-4">
 					<p class="label mb-2">
@@ -76,26 +99,7 @@ const showWeatherDetails = location => {
 					<b>${sunsetTime.time12h}</b>
 				</div>
 			</div>
-			<small class="data-notice p-2 d-block text-success bg-light mt-3">All data is based on your local time zone.</small>
+			<small class="data-notice p-2 d-block text-success bg-light mt-3">All data are based on your local time zone.</small>
 		</div>
 	`;
-};
-
-// convert unix time to local format
-const convertUnixTimeToLocal = unixTime => {
-	const milliSeconds = unixTime * 1000;
-	const humanDateFormat = new Date(milliSeconds);
-	const convertedTimeObject = {
-		fullDate: humanDateFormat.toLocaleString('en-US', {
-			day: 'numeric',
-			month: 'short',
-			year: 'numeric',
-		}),
-		time12h: humanDateFormat.toLocaleString('en-US', {
-			hour: 'numeric',
-			minute: 'numeric',
-			hour12: true,
-		}),
-	};
-	return convertedTimeObject;
 };
