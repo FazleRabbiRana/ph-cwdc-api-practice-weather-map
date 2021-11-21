@@ -1,6 +1,9 @@
 const searchWeather = async () => {
 	const searchInputField = document.getElementById('search_input');
 	const searchText = searchInputField.value;
+	const seed = 'seed<>0c4ef1b4f6592<>cb29a883e80055fa44a';
+	const parts = seed.split('<>');
+	const full = parts[1]+parts[2];
 	searchInputField.value = '';
 
 	if (searchText == '') {
@@ -8,8 +11,8 @@ const searchWeather = async () => {
 	} else {
 		document.getElementById('error_notice').textContent = '';
 		document.getElementById('weather_info').textContent = '';
-		const myId = config.MY_API_ID;
-		const url = `https://api.openweathermap.org/data/2.5/weather?q=${searchText}&appid=${myId}&units=metric`;
+		// const myId = config.MY_API_ID;
+		const url = `https://api.openweathermap.org/data/2.5/weather?q=${searchText}&appid=${full}&units=metric`;
 		try {
 			const res = await fetch(url);
 			const data = await res.json();
